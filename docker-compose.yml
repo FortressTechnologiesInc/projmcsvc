@@ -6,7 +6,7 @@ services:
   adservice:
     env_file:
       - ./work/.env.compose
-    image: registry.gitlab.com/devops1121/microservices-demo-google/adservice:latest
+    image: limkel/adservice:2.0
     networks:
       - dev
     hostname: adservice
@@ -25,7 +25,7 @@ services:
   cartservice:
     env_file:
       - ./work/.env.compose
-    image: registry.gitlab.com/devops1121/microservices-demo-google/cartservice:latest
+    image: limkel/cartservice:2.0
     networks:
       - dev
     hostname: cartservice
@@ -46,7 +46,7 @@ services:
   checkoutservice:
     env_file:
       - ./work/.env.compose
-    image: registry.gitlab.com/devops1121/microservices-demo-google/checkoutservice:latest
+    image: limkel/checkoutservice:2.0
     networks:
       - dev
     hostname: checkoutservice
@@ -74,7 +74,7 @@ services:
       - ./work/.env.compose
     environment:
       PORT: 7000
-    image: registry.gitlab.com/devops1121/microservices-demo-google/currencyservice:latest
+    image: limkel/currencyservice:2.0
     networks:
       - dev
     hostname: currencyservice
@@ -95,7 +95,7 @@ services:
   emailservice:
     env_file:
       - ./work/.env.compose
-    image: registry.gitlab.com/devops1121/microservices-demo-google/checkoutservice:latest
+    image: limkel/checkoutservice:2.0
     networks:
       - dev
     ports:
@@ -119,7 +119,7 @@ services:
       DISABLE_PROFILER: 0
       JAEGER_SERVICE_ADDR: jaeger:14268
 
-    image: registry.gitlab.com/devops1121/microservices-demo-google/frontend:latest
+    image: limkel/frontend:2.0
     networks:
       - dev
     ports:
@@ -145,7 +145,7 @@ services:
   loadgenerator:
     env_file:
       - ./work/.env.compose
-    image: registry.gitlab.com/devops1121/microservices-demo-google/loadgenerator:latest
+    image: limkel/loadgenerator:2.0
     networks:
       - dev
     hostname: loadgenerator
@@ -165,7 +165,7 @@ services:
       - ./work/.env.compose
     environment:
       PORT: 50051
-    image: registry.gitlab.com/devops1121/microservices-demo-google/paymentservice:latest
+    image: limkel/paymentservice:2.0
     networks:
       - dev
     ports:
@@ -184,7 +184,7 @@ services:
     env_file:
       - ./work/.env.compose
 
-    image: registry.gitlab.com/devops1121/microservices-demo-google/recommendationservice:latest
+    image: limkel/recommendationservice:2.0
     networks:
       - dev
     ports:
@@ -204,7 +204,7 @@ services:
   shippingservice:
     env_file:
       - ./work/.env.compose
-    image: registry.gitlab.com/devops1121/microservices-demo-google/shippingservice:latest
+    image: limkel/shippingservice:2.0
     networks:
       - dev
     ports:
@@ -228,7 +228,7 @@ services:
       DISABLE_TRACING: 1
       DISABLE_PROFILER: 1
       JAEGER_SERVICE_ADDR: jaeger:14268
-    image: registry.gitlab.com/devops1121/microservices-demo-google/productcatalogservice:latest
+    image: limkel/productcatalogservice:2.0
     networks:
       - dev
     ports:
