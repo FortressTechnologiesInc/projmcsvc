@@ -109,7 +109,7 @@ jobs:
           sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 
       - name: Run Docker Compose
-        working-directory: ./mcsvc
+        working-directory: mcsvc
         run: docker-compose up -d
         env:
           JAVA_HOME: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.11-9/x64
