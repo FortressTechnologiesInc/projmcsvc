@@ -29,14 +29,15 @@ jobs:
 
       - name: Build and push Docker images
         run: |
-          services=("adservice" "cartservice" "checkoutservice" "currencyservice" "emailservice" \
-                    "frontend" "loadgenerator" "paymentservice" "productcatalogservice" "recommendationservice" "shippingservice")
+          services=("adservice" "cartservice" "checkoutservice" "currencyservice" "emailservice" "frontend" "loadgenerator" "paymentservice" "productcatalogservice" "recommendationservice" "shippingservice")
           for service in "${services[@]}"; do
-            docker build -t iscanprint/${service}:latest ./${service}
-            docker push iscanprint/${service}:latest
+            cd mcsvc/src/${service}
+            docker build -t ghcr.io/${DOCKER_USERNAME}/${service}:2.0 .
+            docker push ghcr.io/${DOCKER_USERNAME}/${service}:2.0
+            cd ../../../  # Navigate back to the root directory for the next iteration
           done
 
       - name: Run Docker Compose
         run: |
           cd mcsvc
-          docker-compose up -d
+          docker-compose -f docker-compose.yml up -d
