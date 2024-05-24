@@ -103,8 +103,10 @@ jobs:
         run: |
           docker build -t iscanprint/shippingservice:2.0 .
           docker push iscanprint/shippingservice:2.0
-          
+
       - name: Run Docker Compose
+        working-directory: mcsvc
         run: |
-          cd mcsvc
           docker-compose up -d
+          
+     
