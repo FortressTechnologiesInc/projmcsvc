@@ -38,7 +38,7 @@ jobs:
 
       - name: Build and Push adservice Docker image
         run: |
-          cd mcsvc/adservice/
+          cd mcsvc/src/adservice/
           docker build -t iscanprint/adservice:2.0 .
           docker push iscanprint/adservice:2.0
           trivy image --severity CRITICAL iscanprint/adservice:2.0
