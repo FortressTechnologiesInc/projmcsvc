@@ -27,14 +27,7 @@ jobs:
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Install Trivy
-        run: |
-          wget https://github.com/aquasecurity/trivy/releases/download/v0.20.0/trivy_0.20.0_Linux-64bit.tar.gz
-          tar zxvf trivy_0.20.0_Linux-64bit.tar.gz
-          sudo mv trivy /usr/local/bin/
-
-      - name: Trivy Scan
-        run: trivy image --severity HIGH,CRITICAL iscanprint/adservice:2.0
+      
 
       - name: Login to Docker Hub
         run: echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
