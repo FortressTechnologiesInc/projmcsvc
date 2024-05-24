@@ -102,31 +102,4 @@ jobs:
           docker build -t iscanprint/shippingservice:2.1 .
           docker push iscanprint/shippingservice:2.1
 
-      - name: Install Docker Compose
-        run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/v2.15.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-          sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and push Docker images
-        working-directory: mcsvc
-        run: |
-          docker-compose build
-          docker-compose push
-
-      - name: Deploy services
-        working-directory: mcsvc
-        run: |
-          docker-compose up -d
-
-      - name: Clean up
-        if: always()
-        working-directory: mcsvc
-        run: |
-          docker-compose down
+     
