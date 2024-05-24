@@ -30,7 +30,7 @@ jobs:
       - name: Build and push Docker images
         run: |
           services=("adservice" "cartservice" "checkoutservice" "currencyservice" "emailservice" "frontend" "loadgenerator" "paymentservice" "productcatalogservice" "recommendationservice" "shippingservice")
-          cd mcsvc/src
+          cd 10tier/src
           for service in "${services[@]}"; do
             if [ -d "$service" ]; then
               cd "$service"
