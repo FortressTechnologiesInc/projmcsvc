@@ -20,7 +20,8 @@ RUN apt-get update -qqy && \
 ENV PYTHONUNBUFFERED=0
 
 # download the grpc health probe
-RUN GRPC_HEALTH_PROBE_VERSION=v0.4.11 && \
+# Update GRPC_HEALTH_PROBE_VERSION to the latest version available at the time of building
+RUN GRPC_HEALTH_PROBE_VERSION=$(curl -s https://api.github.com/repos/grpc-ecosystem/grpc-health-probe/releases/latest | grep tag_name | cut -d '"' -f 4) && \
     wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
     chmod +x /bin/grpc_health_probe
 
