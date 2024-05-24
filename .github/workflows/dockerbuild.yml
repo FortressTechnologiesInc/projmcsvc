@@ -1,4 +1,4 @@
-name: Build
+name: Build and Push Docker Images
 
 on:
   push:
@@ -6,18 +6,17 @@ on:
       - main
 
 jobs:
-  build:
-    name: Build and Scan
+  build-and-push:
     runs-on: ubuntu-latest
-    steps:
-      - name: Update and upgrade packages
-        run: |
-          sudo apt-get update
-          sudo apt-get upgrade -y
 
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+    env:
+      REGISTRY: ghcr.io
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -28,94 +27,22 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Install Trivy
+      - name: Build and push Docker images
         run: |
-          sudo apt-get install -y wget apt-transport-https gnupg lsb-release
-          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
-          sudo apt-get update
-          sudo apt-get install -y trivy
-
-      - name: Build and Push adservice Docker image
-        run: |
-          cd mcsvc/src/adservice/
-          docker build -t iscanprint/adservice:2.0 .
-          docker push iscanprint/adservice:2.0
-          trivy image --severity CRITICAL iscanprint/adservice:2.0
-
-      - name: Build and Push cartservice Docker image
-        run: |
-          cd mcsvc/src/cartservice/src/
-          docker build -t iscanprint/cartservice:2.0 .
-          docker push iscanprint/cartservice:2.0
-          trivy image --severity CRITICAL iscanprint/cartservice:2.0
-
-      - name: Build and Push checkoutservice Docker image
-        run: |
-          cd mcsvc/src/checkoutservice/
-          docker build -t iscanprint/checkoutservice:2.0 .
-          docker push iscanprint/checkoutservice:2.0
-          trivy image --severity CRITICAL iscanprint/checkoutservice:2.0
-
-      - name: Build and Push currencyservice Docker image
-        run: |
-          cd mcsvc/src/currencyservice/
-          docker build -t iscanprint/currencyservice:2.0 .
-          docker push iscanprint/currencyservice:2.0
-          trivy image --severity CRITICAL iscanprint/currencyservice:2.0
-
-      - name: Build and Push emailservice Docker image
-        run: |
-          cd mcsvc/src/emailservice/
-          docker build -t iscanprint/emailservice:2.0 .
-          docker push iscanprint/emailservice:2.0
-          trivy image --severity CRITICAL iscanprint/emailservice:2.0
-
-      - name: Build and Push frontend Docker image
-        run: |
-          cd mcsvc/src/frontend/
-          docker build -t iscanprint/frontend:2.0 .
-          docker push iscanprint/frontend:2.0
-          trivy image --severity CRITICAL iscanprint/frontend:2.0
-
-      - name: Build and Push loadgenerator Docker image
-        run: |
-          cd mcsvc/src/loadgenerator/
-          docker build -t iscanprint/loadgenerator:2.0 .
-          docker push iscanprint/loadgenerator:2.0
-          trivy image --severity CRITICAL iscanprint/loadgenerator:2.0
-
-      - name: Build and Push paymentservice Docker image
-        run: |
-          cd mcsvc/src/paymentservice/
-          docker build -t iscanprint/paymentservice:2.0 .
-          docker push iscanprint/paymentservice:2.0
-          trivy image --severity CRITICAL iscanprint/paymentservice:2.0
-
-      - name: Build and Push productcatalogservice Docker image
-        run: |
-          cd mcsvc/src/productcatalogservice/
-          docker build -t iscanprint/productcatalogservice:2.0 .
-          docker push iscanprint/productcatalogservice:2.0
-          trivy image --severity CRITICAL iscanprint/productcatalogservice:2.0
-
-      - name: Build and Push recommendationservice Docker image
-        run: |
-          cd mcsvc/src/recommendationservice/
-          docker build -t iscanprint/recommendationservice:2.0 .
-          docker push iscanprint/recommendationservice:2.0
-          trivy image --severity CRITICAL iscanprint/recommendationservice:2.0
-
-      - name: Build and Push shippingservice Docker image
-        run: |
-          cd mcsvc/src/shippingservice/
-          docker build -t iscanprint/shippingservice:2.0 .
-          docker push iscanprint/shippingservice:2.0
-          trivy image --severity CRITICAL iscanprint/shippingservice:2.0
+          services=("adservice" "cartservice" "checkoutservice" "currencyservice" "emailservice" "frontend" "loadgenerator" "paymentservice" "productcatalogservice" "recommendationservice" "shippingservice")
+          cd mcsvc/src
+          for service in "${services[@]}"; do
+            if [ -d "$service" ]; then
+              cd "$service"
+              docker build -t ghcr.io/${DOCKER_USERNAME}/${service}:latest .
+              docker push ghcr.io/${DOCKER_USERNAME}/${service}:latest
+              cd ..
+            else
+              echo "Directory $service does not exist."
+            fi
+          done
 
       - name: Run Docker Compose
         run: |
           cd mcsvc
-          docker-compose up -d
-
-      
+          docker-compose -f docker-compose.yml up -d
