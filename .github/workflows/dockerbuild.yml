@@ -1,4 +1,4 @@
-name: Build and Push Docker Images
+name: CI/CD Pipeline by Fortress Technologies Inc
 
 on:
   push:
@@ -6,43 +6,106 @@ on:
       - main
 
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
-
     env:
-      REGISTRY: ghcr.io
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+      SCANNER_HOME: ${{ secrets.SCANNER_HOME }}
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
+      - name: Setup Java, Maven, Node.js
+        uses: actions/setup-java@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          distribution: adopt
+          java-version: "17"
 
-      - name: Build and push Docker images
-        run: |
-          services=("adservice" "cartservice" "checkoutservice" "currencyservice" "emailservice" "frontend" "loadgenerator" "paymentservice" "productcatalogservice" "recommendationservice" "shippingservice")
-          cd 10tier/src
-          for service in "${services[@]}"; do
-            if [ -d "$service" ]; then
-              cd "$service"
-              docker build -t ghcr.io/${DOCKER_USERNAME}/${service}:latest .
-              docker push ghcr.io/${DOCKER_USERNAME}/${service}:latest
-              cd ..
-            else
-              echo "Directory $service does not exist."
-            fi
-          done
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
 
-      - name: Run Docker Compose
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Install Trivy
         run: |
-          cd mcsvc
-          docker-compose -f docker-compose.yml up -d
+          wget https://github.com/aquasecurity/trivy/releases/download/v0.20.0/trivy_0.20.0_Linux-64bit.tar.gz
+          tar zxvf trivy_0.20.0_Linux-64bit.tar.gz
+          sudo mv trivy /usr/local/bin/
+
+      - name: Trivy Scan
+        run: trivy image --severity HIGH,CRITICAL iscanprint/adservice:2.0
+
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build and push adservice
+        working-directory: src/adservice
+        run: |
+          docker build -t iscanprint/adservice:2.0 .
+          docker push iscanprint/adservice:2.0
+
+      - name: Build and push cartservice
+        working-directory: /src/cartservice/src/
+        run: |
+          docker build -t iscanprint/cartservice:2.0 .
+          docker push iscanprint/cartservice:2.0
+
+      - name: Build and push checkoutservice
+        working-directory: src/checkoutservice
+        run: |
+          docker build -t iscanprint/checkoutservice:2.0 .
+          docker push iscanprint/checkoutservice:2.0
+
+      - name: Build and push currencyservice
+        working-directory: src/currencyservice
+        run: |
+          docker build -t iscanprint/currencyservice:2.0 .
+          docker push iscanprint/currencyservice:2.0
+
+      - name: Build and push emailservice
+        working-directory: src/emailservice
+        run: |
+          docker build -t iscanprint/emailservice:2.0 .
+          docker push iscanprint/emailservice:2.0
+
+      - name: Build and push frontend
+        working-directory: src/frontend
+        run: |
+          docker build -t iscanprint/frontend:2.0 .
+          docker push iscanprint/frontend:2.0
+
+      - name: Build and push loadgenerator
+        working-directory: src/loadgenerator
+        run: |
+          docker build -t iscanprint/loadgenerator:2.0 .
+          docker push iscanprint/loadgenerator:2.0
+
+      - name: Build and push paymentservice
+        working-directory: src/paymentservice
+        run: |
+          docker build -t iscanprint/paymentservice:2.0 .
+          docker push iscanprint/paymentservice:2.0
+
+      - name: Build and push productcatalogservice
+        working-directory: src/productcatalogservice
+        run: |
+          docker build -t iscanprint/productcatalogservice:2.0 .
+          docker push iscanprint/productcatalogservice:2.0
+
+      - name: Build and push recommendationservice
+        working-directory: src/recommendationservice
+        run: |
+          docker build -t iscanprint/recommendationservice:2.0 .
+          docker push iscanprint/recommendationservice:2.0
+
+      - name: Build and push shippingservice
+        working-directory: src/shippingservice
+        run: |
+          docker build -t iscanprint/shippingservice:2.0 .
+          docker push iscanprint/shippingservice:2.0
+          
+       - name: Start services with docker-compose
+        run: docker-compose -f 10tier/docker-compose.yml up -d
