@@ -1,0 +1,194 @@
+pipeline {
+    agent any
+
+    tools {
+        maven 'maven'
+        jdk 'jdk'
+        nodejs 'nodejs'
+    }
+
+    environment {
+        SCANNER_HOME = tool 'scanner'
+    }
+
+    stages {
+        stage('1.0 Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+
+        stage('2.0 Git') {
+            steps {
+                git branch: 'main', url: 'https://github.com/FortressTechnologiesInc/mcsvc.git'
+            }
+        }
+
+        
+        stage('4.0 adservice') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'dockerz', toolName: 'docker') {
+                        dir('/root/appnode/workspace/mcsvc/src/adservice/') {
+                            sh "docker build -t iscanprint/adservice:2.1 -f /root/appnode/workspace/mcsvc/src/adservice/Dockerfile ."
+                            
+                            sh "docker push iscanprint/adservice:2.1"
+                            sh "docker rmi -f iscanprint/adservice:2.1 "
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('5.0 cartservice') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'dockerz', toolName: 'docker') {
+                        dir('/root/appnode/workspace/mcsvc/src/cartservice/src/') {
+                            sh "docker build -t iscanprint/cartservice:2.1 ."
+                            
+                            sh "docker push iscanprint/cartservice:2.1"
+                            sh "docker rmi -f iscanprint/cartservice:2.1"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('6.0 checkoutservice') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'dockerz', toolName: 'docker') {
+                        dir('/root/appnode/workspace/mcsvc/src/checkoutservice/') {
+                            sh "docker build -t iscanprint/checkoutservice:2.1 ."
+                            
+                            sh "docker push iscanprint/checkoutservice:2.1"
+                            sh "docker rmi -f iscanprint/checkoutservice:2.1"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('7.0 currencyservice') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'dockerz', toolName: 'docker') {
+                        dir('/root/appnode/workspace/mcsvc/src/currencyservice/') {
+                            sh "docker build -t iscanprint/currencyservice:2.1 ."
+                            
+                            sh "docker push iscanprint/currencyservice:2.1"
+                            sh "docker rmi -f iscanprint/currencyservice:2.1" 
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('8.0 emailservice') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'dockerz', toolName: 'docker') {
+                        dir('/root/appnode/workspace/mcsvc/src/emailservice/') {
+                            sh "docker build -t iscanprint/emailservice:2.1 ."
+                            
+                            sh "docker push iscanprint/emailservice:2.1"
+                            sh "docker rmi -f iscanprint/emailservice:2.1"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('9.0 frontend') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'dockerz', toolName: 'docker') {
+                        dir('/root/appnode/workspace/mcsvc/src/frontend/') {
+                            sh "docker build -t iscanprint/frontend:2.1 ."
+                             
+                            sh "docker push iscanprint/frontend:2.1"
+                            sh "docker rmi -f  iscanprint/frontend:2.1"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('10 loadgenerator') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'dockerz', toolName: 'docker') {
+                        dir('/root/appnode/workspace/mcsvc/src/loadgenerator/') {
+                            sh "docker build -t iscanprint/loadgenerator:2.1 ."
+                           
+                            sh "docker push iscanprint/loadgenerator:2.1"
+                            sh "docker rmi -f iscanprint/loadgenerator:2.1"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('11 paymentservice') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'dockerz', toolName: 'docker') {
+                        dir('/root/appnode/workspace/mcsvc/src/paymentservice/') {
+                            sh "docker build -t iscanprint/paymentservice:2.1 ."
+                            sh "docker push iscanprint/paymentservice:2.1"
+                             
+                            sh "docker rmi -f iscanprint/paymentservice:2.1"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('12 productcatalogservice') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'dockerz', toolName: 'docker') {
+                        dir('/root/appnode/workspace/mcsvc/src/productcatalogservice/') {
+                            sh "docker build -t iscanprint/productcatalogservice:2.1 ."
+                            
+                            sh "docker push iscanprint/productcatalogservice:2.1"
+                            sh "docker rmi -f iscanprint/productcatalogservice:2.1"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('13 recommendationservice') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'dockerz', toolName: 'docker') {
+                        dir('/root/appnode/workspace/mcsvc/src/recommendationservice/') {
+                            sh "docker build -t iscanprint/recommendationservice:2.1 ."
+                             
+                            sh "docker push iscanprint/recommendationservice:2.1"
+                            sh "docker rmi -f iscanprint/recommendationservice:2.1"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('14 shippingservice') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'dockerz', toolName: 'docker') {
+                        dir('/root/appnode/workspace/mcsvc/src/shippingservice/') {
+                            sh "docker build -t iscanprint/shippingservice:2.1 ."
+                           
+                            sh "docker push iscanprint/shippingservice:2.1"
+                            sh "docker rmi -f iscanprint/shippingservice:2.1"
+                        }
+                    }
+                }
+            }
+        }
+        
+    }
+}
