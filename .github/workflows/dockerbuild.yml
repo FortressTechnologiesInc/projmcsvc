@@ -104,5 +104,7 @@ jobs:
           docker build -t iscanprint/shippingservice:2.0 .
           docker push iscanprint/shippingservice:2.0
           
-      - name: Start services with docker-compose
-        run: docker-compose -f mcsvc/docker-compose.yml up -d
+      - name: Run Docker Compose
+        run: |
+          cd mcsvc
+          docker-compose up -d
