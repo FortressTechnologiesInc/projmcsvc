@@ -39,68 +39,68 @@ jobs:
       - name: Build and push adservice
         working-directory: src/adservice
         run: |
-          docker build -t iscanprint/adservice:2.0 .
-          docker push iscanprint/adservice:2.0
+          docker build -t iscanprint/adservice:2.1 .
+          docker push iscanprint/adservice:2.1
 
       - name: Build and push cartservice
         working-directory: src/cartservice/src
         run: |
-          docker build -t iscanprint/cartservice:2.0 .
-          docker push iscanprint/cartservice:2.0
+          docker build -t iscanprint/cartservice:2.1 .
+          docker push iscanprint/cartservice:2.1
 
       - name: Build and push checkoutservice
         working-directory: src/checkoutservice
         run: |
-          docker build -t iscanprint/checkoutservice:2.0 .
-          docker push iscanprint/checkoutservice:2.0
+          docker build -t iscanprint/checkoutservice:2.1 .
+          docker push iscanprint/checkoutservice:2.1
 
       - name: Build and push currencyservice
         working-directory: src/currencyservice
         run: |
-          docker build -t iscanprint/currencyservice:2.0 .
-          docker push iscanprint/currencyservice:2.0
+          docker build -t iscanprint/currencyservice:2.1 .
+          docker push iscanprint/currencyservice:2.1
 
       - name: Build and push emailservice
         working-directory: src/emailservice
         run: |
-          docker build -t iscanprint/emailservice:2.0 .
-          docker push iscanprint/emailservice:2.0
+          docker build -t iscanprint/emailservice:2.1 .
+          docker push iscanprint/emailservice:2.1
 
       - name: Build and push frontend
         working-directory: src/frontend
         run: |
-          docker build -t iscanprint/frontend:2.0 .
-          docker push iscanprint/frontend:2.0
+          docker build -t iscanprint/frontend:2.1 .
+          docker push iscanprint/frontend:2.1
 
       - name: Build and push loadgenerator
         working-directory: src/loadgenerator
         run: |
-          docker build -t iscanprint/loadgenerator:2.0 .
-          docker push iscanprint/loadgenerator:2.0
+          docker build -t iscanprint/loadgenerator:2.1 .
+          docker push iscanprint/loadgenerator:2.1
 
       - name: Build and push paymentservice
         working-directory: src/paymentservice
         run: |
-          docker build -t iscanprint/paymentservice:2.0 .
-          docker push iscanprint/paymentservice:2.0
+          docker build -t iscanprint/paymentservice:2.1 .
+          docker push iscanprint/paymentservice:2.1
 
       - name: Build and push productcatalogservice
         working-directory: src/productcatalogservice
         run: |
-          docker build -t iscanprint/productcatalogservice:2.0 .
-          docker push iscanprint/productcatalogservice:2.0
+          docker build -t iscanprint/productcatalogservice:2.1 .
+          docker push iscanprint/productcatalogservice:2.1
 
       - name: Build and push recommendationservice
         working-directory: src/recommendationservice
         run: |
-          docker build -t iscanprint/recommendationservice:2.0 .
-          docker push iscanprint/recommendationservice:2.0
+          docker build -t iscanprint/recommendationservice:2.1 .
+          docker push iscanprint/recommendationservice:2.1
 
       - name: Build and push shippingservice
         working-directory: src/shippingservice
         run: |
-          docker build -t iscanprint/shippingservice:2.0 .
-          docker push iscanprint/shippingservice:2.0
+          docker build -t iscanprint/shippingservice:2.1 .
+          docker push iscanprint/shippingservice:2.1
 
       - name: Install Docker Compose
         run: |
