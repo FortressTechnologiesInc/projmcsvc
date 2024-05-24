@@ -1,0 +1,39 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    env:
+      REGISTRY: ghcr.io
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Log in to Docker Hub
+      run: echo "${DOCKER_TOKEN}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+
+    - name: Build and push Docker images
+      run: |
+        services=("adservice" "cartservice" "checkoutservice" "currencyservice" "emailservice" \
+                  "frontend" "loadgenerator" "paymentservice" "productcatalogservice" "recommendationservice" "shippingservice")
+        for service in "${services[@]}"; do
+          docker build -t iscanprint/${service}:latest ./${service}
+          docker push iscanprint/${service}:latest
+        done
+
+    - name: Run Docker Compose
+      run: |
+        cd mcsvc
+        docker-compose up -d
