@@ -1,38 +1,42 @@
-name: Test
+name: Push Deploy
 
 on:
   push:
     branches:
-    - main
-    - features/**
-    - dependabot/**
-  pull_request:
-    branches:
-    - main
+      - main
 
 jobs:
-  docker:
-    timeout-minutes: 1
+  build_and_deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v1
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Start containers
-      run: docker-compose -f "docker-compose.yml" up -d --build
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
-    - name: Install node
-      uses: actions/setup-node@v1
-      with:
-        node-version: 14.x
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install docker-compose -y
 
-    - name: Install dependencies
-      run: npm install
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
 
-    - name: Run tests
-      run: npm run test
+      - name: Build and push Docker images
+        run: |
+          docker-compose -f mcsvc/docker-compose.yml build
+          docker-compose -f mcsvc/docker-compose.yml push
 
-    - name: Stop containers
-      if: always()
-      run: docker-compose -f "docker-compose.yml" down
+      - name: Deploy services
+        run: |
+          docker-compose -f mcsvc/docker-compose.yml up -d
+
+      - name: Clean up
+        if: always()
+        run: |
+          docker-compose -f mcsvc/docker-compose.yml down
