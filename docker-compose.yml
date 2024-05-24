@@ -6,7 +6,7 @@ services:
   adservice:
     env_file:
       - ./work/.env.compose
-    image: iscanprint/adservice:2.0
+    image: iscanprint/adservice:2.1
     networks:
       - dev
     hostname: adservice
@@ -25,7 +25,7 @@ services:
   cartservice:
     env_file:
       - ./work/.env.compose
-    image: iscanprint/cartservice:2.0
+    image: iscanprint/cartservice:2.1
     networks:
       - dev
     hostname: cartservice
@@ -46,7 +46,7 @@ services:
   checkoutservice:
     env_file:
       - ./work/.env.compose
-    image: iscanprint/checkoutservice:2.0
+    image: iscanprint/checkoutservice:2.1
     networks:
       - dev
     hostname: checkoutservice
@@ -74,7 +74,7 @@ services:
       - ./work/.env.compose
     environment:
       PORT: 7000
-    image: iscanprint/currencyservice:2.0
+    image: iscanprint/currencyservice:2.1
     networks:
       - dev
     hostname: currencyservice
@@ -95,7 +95,7 @@ services:
   emailservice:
     env_file:
       - ./work/.env.compose
-    image: iscanprint/checkoutservice:2.0
+    image: iscanprint/checkoutservice:2.1
     networks:
       - dev
     ports:
@@ -145,7 +145,7 @@ services:
   loadgenerator:
     env_file:
       - ./work/.env.compose
-    image: iscanprint/loadgenerator:2.0
+    image: iscanprint/loadgenerator:2.1
     networks:
       - dev
     hostname: loadgenerator
@@ -165,7 +165,7 @@ services:
       - ./work/.env.compose
     environment:
       PORT: 50051
-    image: iscanprint/paymentservice:2.0
+    image: iscanprint/paymentservice:2.1
     networks:
       - dev
     ports:
@@ -184,7 +184,7 @@ services:
     env_file:
       - ./work/.env.compose
 
-    image: iscanprint/recommendationservice:2.0
+    image: iscanprint/recommendationservice:2.1
     networks:
       - dev
     ports:
@@ -204,7 +204,7 @@ services:
   shippingservice:
     env_file:
       - ./work/.env.compose
-    image: iscanprint/shippingservice:2.0
+    image: iscanprint/shippingservice:2.1
     networks:
       - dev
     ports:
@@ -228,7 +228,7 @@ services:
       DISABLE_TRACING: 1
       DISABLE_PROFILER: 1
       JAEGER_SERVICE_ADDR: jaeger:14268
-    image: iscanprint/productcatalogservice:2.0
+    image: iscanprint/productcatalogservice:2.1
     networks:
       - dev
     ports:
