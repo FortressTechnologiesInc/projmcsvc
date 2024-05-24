@@ -105,7 +105,7 @@ jobs:
           docker push iscanprint/shippingservice:2.0
 
       - name: Run Docker Compose
-        working-directory: mcsvc/docker-compose.yml
+        working-directory:/home/runner/work/mcsvc/docker-compose.yml
 
         run: |
           docker-compose up -d
