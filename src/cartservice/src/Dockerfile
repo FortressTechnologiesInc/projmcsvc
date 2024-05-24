@@ -23,9 +23,11 @@ RUN dotnet publish cartservice.csproj -p:PublishSingleFile=true -r linux-musl-x6
 # https://mcr.microsoft.com/v2/dotnet/runtime-deps/tags/list
 FROM mcr.microsoft.com/dotnet/runtime-deps:6.0.5-alpine3.14-amd64
 # Update GRPC_HEALTH_PROBE_VERSION to the latest version available at the time of building
-RUN GRPC_HEALTH_PROBE_VERSION=$(curl -s https://api.github.com/repos/grpc-ecosystem/grpc-health-probe/releases/latest | grep tag_name | cut -d '"' -f 4) && \
-    wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
+RUN GRPC_HEALTH_PROBE_VERSION=$(curl -s -H "Authorization: token YOUR_GITHUB_TOKEN" https://api.github.com/repos/grpc-ecosystem/grpc-health-probe/releases/latest | grep '"tag_name"' | cut -d '"' -f 4) && \
+    echo "GRPC_HEALTH_PROBE_VERSION is ${GRPC_HEALTH_PROBE_VERSION}" && \
+    wget -qO /bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
     chmod +x /bin/grpc_health_probe
+
 WORKDIR /app
 COPY --from=builder /cartservice .
 ENV ASPNETCORE_URLS http://*:7070
