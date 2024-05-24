@@ -109,11 +109,7 @@ jobs:
           docker push iscanprint/shippingservice:2.0
           trivy image --severity CRITICAL iscanprint/shippingservice:2.0
 
-      - name: Kubectl Action
-        uses: tale/kubectl-action@v1
-        with:
-          kubeconfig: ${{ secrets.KUBE_CONFIG }}
-          
-      - run: |
-          kubectl apply -f deployment-service.yml -n mygithub
-          kubectl get svc -n webapps
+       - name: Run Docker Compose
+        run: |
+          cd mcsvc
+          docker-compose up -d
