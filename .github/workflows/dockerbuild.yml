@@ -109,7 +109,9 @@ jobs:
           docker push iscanprint/shippingservice:2.0
           trivy image --severity CRITICAL iscanprint/shippingservice:2.0
 
-       - name: Run Docker Compose
+      - name: Run Docker Compose
         run: |
           cd mcsvc
           docker-compose up -d
+
+      
