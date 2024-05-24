@@ -10,6 +10,11 @@ jobs:
     name: Build and Scan
     runs-on: ubuntu-latest
     steps:
+      - name: Update and upgrade packages
+        run: |
+          sudo apt-get update
+          sudo apt-get upgrade -y
+
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
@@ -25,7 +30,6 @@ jobs:
 
       - name: Install Trivy
         run: |
-          sudo apt-get update
           sudo apt-get install -y wget apt-transport-https gnupg lsb-release
           wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
           echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
