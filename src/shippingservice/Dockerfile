@@ -29,9 +29,11 @@ RUN go build -gcflags="${SKAFFOLD_GO_GCFLAGS}" -o /go/bin/shippingservice .
 FROM alpine as release
 RUN apk add --no-cache ca-certificates
 # Update GRPC_HEALTH_PROBE_VERSION to the latest version available at the time of building
-RUN GRPC_HEALTH_PROBE_VERSION=$(curl -s https://api.github.com/repos/grpc-ecosystem/grpc-health-probe/releases/latest | grep tag_name | cut -d '"' -f 4) && \
-    wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
+RUN GRPC_HEALTH_PROBE_VERSION=$(curl -s -H "Authorization: token YOUR_GITHUB_TOKEN" https://api.github.com/repos/grpc-ecosystem/grpc-health-probe/releases/latest | grep '"tag_name"' | cut -d '"' -f 4) && \
+    echo "GRPC_HEALTH_PROBE_VERSION is ${GRPC_HEALTH_PROBE_VERSION}" && \
+    wget -qO /bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
     chmod +x /bin/grpc_health_probe
+
 WORKDIR /src
 COPY --from=builder /go/bin/shippingservice /src/shippingservice
 ENV APP_PORT=50051
