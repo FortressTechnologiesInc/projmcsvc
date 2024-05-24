@@ -13,7 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup Java, Maven, Node.js
+      - name: Setup Java
         uses: actions/setup-java@v2
         with:
           distribution: adopt
@@ -108,13 +108,27 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
           sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 
-      - name: List current directory contents
-        run: ls -la
-        # Ensure this step runs in the correct context
-        working-directory: .
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install docker-compose -y
 
-      - name: Run Docker Compose
-        working-directory: ./mcsvc
-        run: docker-compose up -d
-        env:
-          JAVA_HOME: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.11-9/x64
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker images
+        run: |
+          docker-compose -f mcsvc/docker-compose.yml build
+          docker-compose -f mcsvc/docker-compose.yml push
+
+      - name: Deploy services
+        run: |
+          docker-compose -f mcsvc/docker-compose.yml up -d
+
+      - name: Clean up
+        if: always()
+        run: |
+          docker-compose -f mcsvc/docker-compose.yml down
