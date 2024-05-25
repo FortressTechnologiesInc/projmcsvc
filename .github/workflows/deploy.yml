@@ -31,7 +31,9 @@ jobs:
 
       - name: Wait for pods to be ready
         run: |
-          kubectl wait --for=condition=ready pod --all --timeout=10000s
+        sleep 30
+        kubectl wait --for=condition=ready pod --all --timeout=600s
+
 
       - name: Show Minikube IP
         run: minikube ip
