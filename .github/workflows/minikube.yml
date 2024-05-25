@@ -1,24 +1,34 @@
-name: Minikube Setup
+name: Push and Deploy
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  setup-minikube:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2
 
-    - name: Update and upgrade dependencies
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push Docker images
       run: |
-        sudo apt-get update
-        sudo apt-get upgrade -y
-        sudo apt-get install -y apt-transport-https ca-certificates curl
-
-    - name: Set up Docker
-      uses: docker/setup-buildx-action@v2
-
+        docker buildx build --push --tag yourusername/yourimage:latest .
+    
     - name: Install Minikube
       run: |
         curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
@@ -26,12 +36,11 @@ jobs:
 
     - name: Start Minikube
       run: |
-        sudo minikube start --driver=docker
+        sudo apt-get update -y
+        sudo apt-get install -y conntrack
+        sudo minikube start --driver=docker --force
 
-    - name: Verify Minikube Status
+    - name: Deploy to Kubernetes
       run: |
-        minikube status
-
-    - name: Get Cluster Info
-      run: |
-        kubectl cluster-info
+        kubectl apply -f k8s/deployment.yaml
+        kubectl apply -f k8s/service.yaml
