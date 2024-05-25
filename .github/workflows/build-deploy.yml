@@ -27,7 +27,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Deploy to Minikube
-        run: kubectl apply -f deploy-service.yml --validate=false
+        run: kubectl apply -f deploy-svc.yml --validate=false
 
       - name: Show Minikube IP
         run: minikube ip
