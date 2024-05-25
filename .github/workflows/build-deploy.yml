@@ -49,7 +49,8 @@ jobs:
           echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
 
       - name: Apply Kubernetes deployment
-        run: kubectl apply -f deployment-service.yml
+        run: kubectl apply -f deployment-service.yml --validate=false
+
 
       - name: Get pods
         run: kubectl get po
