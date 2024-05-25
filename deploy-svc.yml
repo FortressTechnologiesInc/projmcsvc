@@ -437,7 +437,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: gcr.io/google-samples/microservices-demo/shippingservice:v0.8.0
+        image: iscanprint/shippingservice:2.1
         ports:
         - containerPort: 50051
         env:
