@@ -55,7 +55,8 @@ jobs:
         run: sleep 10
 
       - name: Wait 30 seconds before curl
-        run: sleep 3000
+        run: sleep 30
+
 
       - name: Curl localhost
         run: curl http://localhost:9082
