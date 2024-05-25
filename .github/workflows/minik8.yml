@@ -27,7 +27,7 @@ jobs:
 
     - name: Build and push Docker images
       run: |
-        docker buildx build --push --tag yourusername/yourimage:latest .
+        docker buildx build --push --tag iscanprint/minikube:2.1 .
 
     - name: Install Minikube
       run: |
