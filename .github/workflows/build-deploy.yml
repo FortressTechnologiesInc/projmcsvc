@@ -14,7 +14,7 @@ jobs:
 
       - name: Start Minikube
         run: |
-          minikube start
+          minikube start --driver=docker
           minikube status
 
       - name: Set Docker environment
@@ -29,23 +29,33 @@ jobs:
       - name: Deploy to Minikube
         run: kubectl apply -f deploy-svc.yml --validate=false
 
+      - name: Wait for pods to be ready
+        run: |
+          kubectl wait --for=condition=ready pod --all --timeout=300s
+
       - name: Show Minikube IP
         run: minikube ip
-
-      - name: Wait for 10 seconds
-        run: sleep 10
 
       - name: Get pods
         run: kubectl get po
 
-      - name: Wait for 10 seconds
-        run: sleep 10
-
       - name: Get deployments
         run: kubectl get deployments
 
-      - name: Wait for 10 seconds
-        run: sleep 10
-
       - name: Get services
         run: kubectl get svc
+
+      - name: Wait 20 seconds before port forward
+        run: sleep 20
+
+      - name: Port forward service
+        run: kubectl port-forward svc/frontend 9082:80 &
+
+      - name: Wait for port forward
+        run: sleep 10
+
+      - name: Wait 30 seconds before curl
+        run: sleep 30
+
+      - name: Curl localhost
+        run: curl http://localhost:9082
