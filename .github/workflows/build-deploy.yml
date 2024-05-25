@@ -1,4 +1,5 @@
-name: CI/CD Pipeline by Fortress Technologies Inc
+
+name: Deploy to Minikube
 
 on:
   push:
@@ -6,29 +7,19 @@ on:
       - main
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup Java
-        uses: actions/setup-java@v2
-        with:
-          distribution: adopt
-          java-version: "17"
+      - name: Start Minikube
+        run: |
+          minikube start
+          minikube status
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: "20"
-
-      - name: Install jq
-        run: sudo apt-get update && sudo apt-get install -y jq
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+      - name: Set Docker environment
+        run: eval $(minikube -p minikube docker-env)
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -36,21 +27,12 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    
-      - name: Install kubectl
-        run: |
-          curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
-          chmod +x ./kubectl
-          sudo mv ./kubectl /usr/local/bin/kubectl
 
-      - name: Set up kubeconfig
-        run: |
-          mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
-
-      - name: Apply Kubernetes deployment
+      - name: Deploy to Minikube
         run: kubectl apply -f deployment-service.yml --validate=false
 
+      - name: Show Minikube IP
+        run: minikube ip
 
       - name: Get pods
         run: kubectl get po
