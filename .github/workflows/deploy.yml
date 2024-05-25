@@ -29,10 +29,7 @@ jobs:
       - name: Deploy to Minikube
         run: kubectl apply -f deploy-svc.yml --validate=false
 
-      - name: Wait for pods to be ready
-        run: |
-          sleep 5
-          kubectl wait --for=condition=ready pod --all --timeout=600s
+     
 
 
       - name: Show Minikube IP
