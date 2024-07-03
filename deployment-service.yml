@@ -541,7 +541,7 @@ spec:
       serviceAccountName: default
       containers:
         - name: server
-          image: iscanprint/adservice:2.0
+          image: gcr.io/google-samples/microservices-demo/adservice:v0.10.0
           ports:
             - containerPort: 9555
           readinessProbe:
