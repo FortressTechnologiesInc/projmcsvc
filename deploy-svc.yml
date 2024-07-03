@@ -638,7 +638,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
         - name: server
-          image: iscanprint/adservice:2.1
+          image: gcr.io/google-samples/microservices-demo/adservice:v0.10.0
           ports:
             - containerPort: 9555
           env:
