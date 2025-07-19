@@ -270,7 +270,7 @@ kind: Service
 metadata:
   name: frontend
 spec:
-  type: NodePort
+  type: LoadBalancer  #NodePort
   selector:
     app: frontend
   ports:
@@ -284,7 +284,7 @@ kind: Service
 metadata:
   name: frontend-external
 spec:
-  type: NodePort
+  type: LoadBalancer  #NodePort
   selector:
     app: frontend
   ports:
