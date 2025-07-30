@@ -39,67 +39,67 @@ jobs:
       - name: Build and push adservice
         working-directory: src/adservice
         run: |
-          docker build -t limkel/adservice:2.1 .
-          docker push limkel/adservice:2.1
+          docker build -t limkel/adservice:2.5 .
+          docker push limkel/adservice:2.5
 
       - name: Build and push cartservice
         working-directory: src/cartservice/src
         run: |
-          docker build -t limkel/cartservice:2.1 .
-          docker push limkel/cartservice:2.1
+          docker build -t limkel/cartservice:2.5 .
+          docker push limkel/cartservice:2.5
 
       - name: Build and push checkoutservice
         working-directory: src/checkoutservice
         run: |
-          docker build -t limkel/checkoutservice:2.1 .
-          docker push limkel/checkoutservice:2.1
+          docker build -t limkel/checkoutservice:2.5 .
+          docker push limkel/checkoutservice:2.5
 
       - name: Build and push currencyservice
         working-directory: src/currencyservice
         run: |
-          docker build -t limkel/currencyservice:2.1 .
-          docker push limkel/currencyservice:2.1
+          docker build -t limkel/currencyservice:2.5 .
+          docker push limkel/currencyservice:2.5
 
       - name: Build and push emailservice
         working-directory: src/emailservice
         run: |
-          docker build -t limkel/emailservice:2.1 .
-          docker push limkel/emailservice:2.1
+          docker build -t limkel/emailservice:2.5 .
+          docker push limkel/emailservice:2.5
 
       - name: Build and push frontend
         working-directory: src/frontend
         run: |
-          docker build -t limkel/frontend:2.1 .
-          docker push limkel/frontend:2.1
+          docker build -t limkel/frontend:2.5 .
+          docker push limkel/frontend:2.5
 
       - name: Build and push loadgenerator
         working-directory: src/loadgenerator
         run: |
-          docker build -t limkel/loadgenerator:2.1 .
-          docker push limkel/loadgenerator:2.1
+          docker build -t limkel/loadgenerator:2.5 .
+          docker push limkel/loadgenerator:2.5
 
       - name: Build and push paymentservice
         working-directory: src/paymentservice
         run: |
-          docker build -t limkel/paymentservice:2.1 .
-          docker push limkel/paymentservice:2.1
+          docker build -t limkel/paymentservice:2.5 .
+          docker push limkel/paymentservice:2.5
 
       - name: Build and push productcatalogservice
         working-directory: src/productcatalogservice
         run: |
-          docker build -t limkel/productcatalogservice:2.1 .
-          docker push limkel/productcatalogservice:2.1
+          docker build -t limkel/productcatalogservice:2.5 .
+          docker push limkel/productcatalogservice:2.5
 
       - name: Build and push recommendationservice
         working-directory: src/recommendationservice
         run: |
-          docker build -t limkel/recommendationservice:2.1 .
-          docker push limkel/recommendationservice:2.1
+          docker build -t limkel/recommendationservice:2.5 .
+          docker push limkel/recommendationservice:2.5
 
       - name: Build and push shippingservice
         working-directory: src/shippingservice
         run: |
-          docker build -t limkel/shippingservice:2.1 .
-          docker push limkel/shippingservice:2.1
+          docker build -t limkel/shippingservice:2.5 .
+          docker push limkel/shippingservice:2.5
 
      
