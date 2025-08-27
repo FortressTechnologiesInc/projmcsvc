@@ -28,7 +28,7 @@ spec:
                 - ALL
             privileged: false
             readOnlyRootFilesystem: true
-          image: iscanprint/emailservice:2.0
+          image: rony1993/emailservice:latest
           ports:
             - containerPort: 8080
           env:
@@ -87,7 +87,7 @@ spec:
       serviceAccountName: default
       containers:
         - name: server
-          image: iscanprint/checkoutservice:2.0
+          image: rony1993/checkoutservice:latest
           ports:
             - containerPort: 5050
           readinessProbe:
@@ -155,7 +155,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
         - name: server
-          image: iscanprint/recommendationservice:2.0
+          image: rony1993/recommendationservice:latest
           ports:
             - containerPort: 8080
           readinessProbe:
@@ -218,7 +218,7 @@ spec:
       serviceAccountName: default
       containers:
         - name: server
-          image: iscanprint/frontend:2.0
+          image: rony1993/frontend:latest
           ports:
             - containerPort: 8080
           readinessProbe:
@@ -270,7 +270,7 @@ kind: Service
 metadata:
   name: frontend
 spec:
-  type: LoadBalancer  #NodePort
+  type: NodePort
   selector:
     app: frontend
   ports:
@@ -284,7 +284,7 @@ kind: Service
 metadata:
   name: frontend-external
 spec:
-  type: LoadBalancer  #NodePort
+  type: LoadBalancer
   selector:
     app: frontend
   ports:
@@ -310,7 +310,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
         - name: server
-          image: iscanprint/paymentservice:2.0
+          image: rony1993/paymentservice:latest
           ports:
             - containerPort: 50051
           env:
@@ -368,7 +368,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
         - name: server
-          image: iscanprint/productcatalogservice:2.0
+          image: rony1993/productcatalogservice:latest
           ports:
             - containerPort: 3550
           env:
@@ -412,64 +412,6 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: shippingservice
-spec:
-  selector:
-    matchLabels:
-      app: shippingservice
-  template:
-    metadata:
-      labels:
-        app: shippingservice
-    spec:
-      serviceAccountName: default
-      terminationGracePeriodSeconds: 5
-      containers:
-        - name: server
-          image: iscanprint/shippingservice:2.0
-          ports:
-            - containerPort: 50051
-          readinessProbe:
-            exec:
-              command:
-                - /bin/grpc_health_probe
-                - -addr=:50051
-          livenessProbe:
-            exec:
-              command:
-                - /bin/grpc_health_probe
-                - -addr=:50051
-          env:
-            - name: PORT
-              value: "50051"
-            - name: DISABLE_PROFILER
-              value: "1"
-          resources:
-            requests:
-              cpu: 100m
-              memory: 64Mi
-            limits:
-              cpu: 200m
-              memory: 128Mi
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: shippingservice
-spec:
-  type: ClusterIP
-  selector:
-    app: shippingservice
-  ports:
-    - name: grpc
-      port: 50051
-      targetPort: 50051
-
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
   name: cartservice
 spec:
   selector:
@@ -484,31 +426,34 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
         - name: server
-          image: iscanprint/cartservice:2.0
+          image: rony1993/cartservice:latest
           ports:
             - containerPort: 7070
           env:
-            - name: PORT
-              value: "7070"
             - name: REDIS_ADDR
               value: redis-cart:6379
-          readinessProbe:
-            exec:
-              command:
-                - /bin/grpc_health_probe
-                - -addr=:7070
-          livenessProbe:
-            exec:
-              command:
-                - /bin/grpc_health_probe
-                - -addr=:7070
           resources:
             requests:
-              cpu: 100m
+              cpu: 200m
               memory: 64Mi
             limits:
-              cpu: 200m
+              cpu: 300m
               memory: 128Mi
+          readinessProbe:
+            initialDelaySeconds: 15
+            exec:
+              command:
+                - /bin/grpc_health_probe
+                - -addr=:7070
+                - -rpc-timeout=5s
+          livenessProbe:
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            exec:
+              command:
+                - /bin/grpc_health_probe
+                - -addr=:7070
+                - -rpc-timeout=5s
 
 ---
 apiVersion: v1
@@ -528,58 +473,44 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: adservice
+  name: loadgenerator
 spec:
   selector:
     matchLabels:
-      app: adservice
+      app: loadgenerator
+  replicas: 1
   template:
     metadata:
       labels:
-        app: adservice
+        app: loadgenerator
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
     spec:
       serviceAccountName: default
+      terminationGracePeriodSeconds: 5
+      restartPolicy: Always
       containers:
-        - name: server
-          image: gcr.io/google-samples/microservices-demo/adservice:v0.10.0
-          ports:
-            - containerPort: 9555
-          readinessProbe:
-            exec:
-              command:
-                - /bin/grpc_health_probe
-                - -addr=:9555
-          livenessProbe:
-            exec:
-              command:
-                - /bin/grpc_health_probe
-                - -addr=:9555
+        - name: main
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+          image: rony1993/loadgenerator:latest
           env:
-            - name: PORT
-              value: "9555"
-            - name: DISABLE_PROFILER
-              value: "1"
+            - name: FRONTEND_ADDR
+              value: frontend:80
+            - name: USERS
+              value: "10"
           resources:
             requests:
-              cpu: 100m
-              memory: 64Mi
+              cpu: 300m
+              memory: 256Mi
             limits:
-              cpu: 200m
-              memory: 128Mi
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: adservice
-spec:
-  type: ClusterIP
-  selector:
-    app: adservice
-  ports:
-    - name: grpc
-      port: 9555
-      targetPort: 9555
+              cpu: 500m
+              memory: 512Mi
 
 ---
 apiVersion: apps/v1
@@ -596,11 +527,18 @@ spec:
         app: currencyservice
     spec:
       serviceAccountName: default
+      terminationGracePeriodSeconds: 5
       containers:
         - name: server
-          image: iscanprint/currencyservice:2.0
+          image: rony1993/currencyservice:latest
           ports:
-            - containerPort: 7000
+            - name: grpc
+              containerPort: 7000
+          env:
+            - name: PORT
+              value: "7000"
+            - name: DISABLE_PROFILER
+              value: "1"
           readinessProbe:
             exec:
               command:
@@ -611,11 +549,6 @@ spec:
               command:
                 - /bin/grpc_health_probe
                 - -addr=:7000
-          env:
-            - name: PORT
-              value: "7000"
-            - name: DISABLE_PROFILER
-              value: "1"
           resources:
             requests:
               cpu: 100m
@@ -637,6 +570,64 @@ spec:
     - name: grpc
       port: 7000
       targetPort: 7000
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shippingservice
+spec:
+  selector:
+    matchLabels:
+      app: shippingservice
+  template:
+    metadata:
+      labels:
+        app: shippingservice
+    spec:
+      serviceAccountName: default
+      containers:
+        - name: server
+          image: rony1993/shippingservice:latest
+          ports:
+            - containerPort: 50051
+          env:
+            - name: PORT
+              value: "50051"
+            - name: DISABLE_PROFILER
+              value: "1"
+          readinessProbe:
+            periodSeconds: 5
+            exec:
+              command:
+                - /bin/grpc_health_probe
+                - -addr=:50051
+          livenessProbe:
+            exec:
+              command:
+                - /bin/grpc_health_probe
+                - -addr=:50051
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shippingservice
+spec:
+  type: ClusterIP
+  selector:
+    app: shippingservice
+  ports:
+    - name: grpc
+      port: 50051
+      targetPort: 50051
 
 ---
 apiVersion: apps/v1
@@ -677,17 +668,74 @@ spec:
               memory: 200Mi
       volumes:
         - name: redis-data
-          persistentVolumeClaim:
-            claimName: redis-pvc
+          emptyDir: {}
 
 ---
 apiVersion: v1
-kind: PersistentVolumeClaim
+kind: Service
 metadata:
-  name: redis-pvc
+  name: redis-cart
 spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
+  type: ClusterIP
+  selector:
+    app: redis-cart
+  ports:
+    - name: tcp-redis
+      port: 6379
+      targetPort: 6379
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adservice
+spec:
+  selector:
+    matchLabels:
+      app: adservice
+  template:
+    metadata:
+      labels:
+        app: adservice
+    spec:
+      containers:
+        - name: server
+          image: gcr.io/google-samples/microservices-demo/adservice:v0.8.0
+          ports:
+            - containerPort: 9555
+          env:
+            - name: PORT
+              value: "9555"
+          resources:
+            requests:
+              cpu: 200m
+              memory: 180Mi
+            limits:
+              cpu: 600m
+              memory: 530Mi
+          readinessProbe:
+            tcpSocket:
+              port: 9555
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 10
+          livenessProbe:
+            tcpSocket:
+              port: 9555
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            failureThreshold: 5
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: adservice
+spec:
+  type: ClusterIP
+  selector:
+    app: adservice
+  ports:
+    - name: grpc
+      port: 9555
+      targetPort: 9555
