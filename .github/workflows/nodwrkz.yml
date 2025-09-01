@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted   # Run on your local agent runner
+    runs-on: selfhosted   # Run on your local agent runner
 
     steps:
       - name: Checkout code
