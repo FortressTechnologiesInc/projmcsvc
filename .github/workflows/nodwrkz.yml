@@ -1,0 +1,72 @@
+name: CI/CD Pipeline by Fortress Technologies Inc
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: selfhosted   # Run on your local agent runner
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"   # LTS
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"   # Latest LTS
+          cache: "npm"
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y jq build-essential
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          install: true
+          driver-opts: network=host
+
+      - name: Restore Docker build cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Build microservice images locally with cache
+        run: |
+          services=(
+            adservice
+            cartservice/src
+            checkoutservice
+            currencyservice
+            emailservice
+            frontend
+            loadgenerator
+            paymentservice
+            productcatalogservice
+            recommendationservice
+            shippingservice
+          )
+          for svc in "${services[@]}"; do
+            name=$(basename "$svc")
+            echo "⚙️ Building $name locally with persistent cache..."
+            docker buildx build \
+              --load \
+              --cache-from=type=local,src=/tmp/.buildx-cache \
+              --cache-to=type=local,dest=/tmp/.buildx-cache-new,mode=max \
+              -t limkel/$name:1 \
+              src/$svc
+          done
+          # Move new cache into place for next run
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
