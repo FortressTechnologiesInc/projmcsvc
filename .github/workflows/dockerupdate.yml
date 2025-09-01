@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: selfhosted
+    runs-on: nodwrkz
 
     steps:
       - name: Checkout code
